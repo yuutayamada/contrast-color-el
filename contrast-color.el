@@ -36,6 +36,7 @@
 ;; colors are based on Google’s material design palette
 ;; (https://material.google.com/style/color.html)
 ;;
+;;
 ;; Usage:
 ;;
 ;;   (contrast-color "#ff00ff") ; -> "#4caf50"
@@ -73,6 +74,7 @@
           (const :tag "Initial value" nil)
           (repeat :tag "Cons sell of contrast color and specified color"
                   (cons string string))))
+
 ;;;;;;;;;;;;;;;;
 ;; Functions
 
