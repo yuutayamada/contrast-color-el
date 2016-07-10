@@ -82,6 +82,9 @@
   :group 'contrast-color
   :type 'bool)
 
+(defvar contrast-color--lab-cache nil
+  "Internal cache.")
+
 ;;;;;;;;;;;;;;;;
 ;; Functions
 
@@ -95,10 +98,12 @@ As the reference BASE-COLOR will be used to compare on the process."
   (let* ((candidates contrast-color-candidates)
          (b (contrast-color--get-lab base-color))
          (labs-and-colors
-          (cl-mapcar
-           (lambda (c) (cons (contrast-color--get-lab c) c)) candidates)))
-    (cl-mapcar (lambda (pair) (cons (color-cie-de2000 b (car pair)) (cdr pair)))
-               labs-and-colors)))
+          (or contrast-color--lab-cache
+              (setq contrast-color--lab-cache
+                    (cl-mapcar
+                     (lambda (c) (cons (contrast-color--get-lab c) c)) candidates)))))
+    (cl-loop for (l . c) in labs-and-colors
+             collect (cons (color-cie-de2000 b l) c))))
 
 (defun contrast-color--compute (color)
   "Return contrast color against COLOR."
