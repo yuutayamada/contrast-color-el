@@ -32,7 +32,7 @@
 ;;
 ;; This package only provide a single function that return a contrast
 ;; color using CIEDE2000 algorithm.  The contrast color will be picked
-;; from ‘contrast-color-color-candidates’ variable.  The default
+;; from ‘contrast-color-candidates’ variable.  The default
 ;; colors are based on Google’s material design palette
 ;; (https://material.google.com/style/color.html)
 ;;
@@ -52,7 +52,7 @@
 (defgroup contrast-color nil "contrast-color group"
   :group 'convenience)
 
-(defcustom contrast-color-color-candidates
+(defcustom contrast-color-candidates
   ;; license: http://zavoloklom.github.io/material-design-color-palette/license.html
   '("#f44336" "#e91e63" "#9c27b0" ; Red, Pink, Purple
     "#673ab7" "#3f51b5" "#2196f3" ; Deep Purple, Indigo, Blue
@@ -83,7 +83,7 @@
 (defun contrast-color--compute (base-color)
   "Return alist of (ciede2000 . color).
 As the reference BASE-COLOR will be used on the process."
-  (let* ((colors contrast-color-color-candidates)
+  (let* ((colors contrast-color-candidates)
          (b (contrast-color--get-lab base-color))
          (labs-and-colors
           (cl-mapcar
@@ -103,7 +103,7 @@ As the reference BASE-COLOR will be used on the process."
 ;;;###autoload
 (defun contrast-color (color)
   "Return most contrasted color against COLOR.
-The return color picked from ‘contrast-color-color-candidates’.
+The return color picked from ‘contrast-color-candidates’.
 The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
   (let ((best-color (assoc-default color contrast-color-cache)))
     (if best-color
