@@ -70,11 +70,11 @@
 ;; TODO: make this variable saves when users exit Emacs, so don’t need
 ;; same calculation again.
 (defcustom contrast-color-cache nil
-  "Alist of contrast color and specified color."
+  "Alist of specified base color and contrast color."
   :group 'contrast-color
   :type '(choice
           (const :tag "Initial value" nil)
-          (repeat :tag "Cons sell of contrast color and specified color"
+          (repeat :tag "Cons sell of specified color and contrast color"
                   (cons string string))))
 
 ;;;;;;;;;;;;;;;;
@@ -85,9 +85,9 @@
   (apply 'color-srgb-to-lab (color-name-to-rgb color)))
 
 (defun contrast-color--compute-core (base-color)
-  "Return alist of (ciede2000 . color).
-As the reference BASE-COLOR will be used on the process."
   (let* ((colors contrast-color-candidates)
+  "Return alist of (color-of-candidate . ciede2000).
+As the reference BASE-COLOR will be used to compare on the process."
          (b (contrast-color--get-lab base-color))
          (labs-and-colors
           (cl-mapcar
