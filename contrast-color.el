@@ -31,10 +31,7 @@
 ;;; Commentary:
 ;;
 ;; This package only provide a single function that return a contrast
-;; color using CIEDE2000 algorithm.  The contrast color will be picked
-;; from ‘contrast-color-candidates’ variable.  The default
-;; colors are based on Google’s material design palette
-;; (https://material.google.com/style/color.html)
+;; color using CIEDE2000 algorithm.
 ;;
 ;;
 ;; Usage:
@@ -44,6 +41,15 @@
 ;;                  or
 ;;
 ;;   (contrast-color "Brightmagenta") ; -> "#4caf50"
+;;
+;;
+;; Note that if you want to choose from more colors, below configuration set
+;; material design’s colors as color candidates:
+;;
+;;    (setq contrast-color-candidates contrast-color-material-colors
+;;          contrast-color--lab-cache nil)
+;;
+;; But keep in mind that this configuration may increase calculation time.
 ;;
 ;;; Code:
 
