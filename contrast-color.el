@@ -67,6 +67,8 @@
   :group 'contrast-color
   :type '(repeat :tag "list of colors" string))
 
+;; TODO: make this variable saves when users exit Emacs, so don’t need
+;; same calculation again.
 (defcustom contrast-color-cache nil
   "Alist of contrast color and specified color."
   :group 'contrast-color
