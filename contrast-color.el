@@ -54,15 +54,7 @@
   :group 'convenience)
 
 (defcustom contrast-color-candidates
-  ;; license: http://zavoloklom.github.io/material-design-color-palette/license.html
-  '("#f44336" "#e91e63" "#9c27b0" ; Red, Pink, Purple
-    "#673ab7" "#3f51b5" "#2196f3" ; Deep Purple, Indigo, Blue
-    "#03a9f4" "#00bcd4" "#009688" ; Light Blue, Cyan, Teal
-    "#4caf50" "#8bc34a" "#cddc39" ; Green, Light Green, Lime
-    "#ffeb3b" "#ffc107" "#ff9800" ; Yellow, Amber, Orange
-    "#ff5722" "#795548" "#9e9e9e" ; Deep Orange, Brown, Grey
-    "#607d8b" "#000000" "#ffffff" ; Blue Grey, Black, White
-    )
+  '("black" "white" "red" "green" "yellow" "blue" "magenta" "cyan")
   "List of colors.  One of those colors is used as the contrast color."
   :group 'contrast-color
   :type '(repeat :tag "list of colors" string))
