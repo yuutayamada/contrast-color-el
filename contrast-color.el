@@ -92,7 +92,7 @@ As the reference BASE-COLOR will be used on the process."
     (cl-mapcar (lambda (pair) (cons (color-cie-de2000 b (car pair)) (cdr pair)))
                labs-and-colors)))
 
-(defun contrast-color--pick (color)
+(defun contrast-color--compute (color)
   "Return contrast color against COLOR."
   (cl-loop
    with cie-and-colors = (contrast-color--compute-core color)
@@ -108,7 +108,7 @@ The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
   (let ((best-color (assoc-default color contrast-color-cache)))
     (if best-color
         best-color
-      (let ((c (contrast-color--pick color)))
+      (let ((c (contrast-color--compute color)))
         (add-to-list 'contrast-color-cache (cons color c))
         c))))
 
