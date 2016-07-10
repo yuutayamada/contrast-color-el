@@ -95,17 +95,17 @@
 As the reference BASE-COLOR will be used to compare on the process."
   (let* ((candidates contrast-color-candidates)
          (b (contrast-color--get-lab base-color))
-         (labs-and-colors
+         (colors-&-labs
           (or contrast-color--lab-cache
               (setq contrast-color--lab-cache
                     (contrast-color--convert-lab candidates)))))
-    (cl-loop for (l . c) in labs-and-colors
+    (cl-loop for (c . l) in colors-&-labs
              collect (contrast-color--examine b l c))))
 
 (defun contrast-color--convert-lab (color-candidates)
   "Convert COLOR-CANDIDATES to l*a*b style."
   (cl-loop for c in color-candidates
-           collect (cons (contrast-color--get-lab c) c) ))
+           collect (cons c (contrast-color--get-lab c))))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
