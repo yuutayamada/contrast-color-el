@@ -1,9 +1,9 @@
-;;; contrast-color-picker.el --- Pick best contrast color for you -*- lexical-binding: t; -*-
+;;; contrast-color.el --- Pick best contrast color for you -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Yuta Yamada
 
 ;; Author: Yuta Yamada <cokesboy[at]gmail.com>
-;; URL: https://github.com/yuutayamada/contrast-color-picker-el
+;; URL: https://github.com/yuutayamada/contrast-color-el
 ;; Version: 1.0.0
 ;; Package-Requires: ((cl-lib "0.5"))
 ;; Keywords: color, convenience
@@ -32,27 +32,27 @@
 ;;
 ;; This package only provide a single function that return a contrast
 ;; color using CIEDE2000 algorithm.  The contrast color will be picked
-;; from ‘contrast-color-picker-color-candidates’ variable.  The default
+;; from ‘contrast-color-color-candidates’ variable.  The default
 ;; colors are based on Google’s material design palette
 ;; (https://material.google.com/style/color.html)
 ;;
 ;; Usage:
 ;;
-;;   (contrast-color-picker "#ff00ff") ; -> "#4caf50"
+;;   (contrast-color "#ff00ff") ; -> "#4caf50"
 ;;
 ;;                  or
 ;;
-;;   (contrast-color-picker "Brightmagenta") ; -> "#4caf50"
+;;   (contrast-color "Brightmagenta") ; -> "#4caf50"
 ;;
 ;;; Code:
 
 (require 'color)
 (require 'cl-lib)
 
-(defgroup contrast-color-picker nil "contrast-color-picker group"
+(defgroup contrast-color nil "contrast-color group"
   :group 'convenience)
 
-(defcustom contrast-color-picker-color-candidates
+(defcustom contrast-color-color-candidates
   ;; license: http://zavoloklom.github.io/material-design-color-palette/license.html
   '("#f44336" "#e91e63" "#9c27b0" ; Red, Pink, Purple
     "#673ab7" "#3f51b5" "#2196f3" ; Deep Purple, Indigo, Blue
@@ -63,12 +63,12 @@
     "#607d8b" "#000000" "#ffffff" ; Blue Grey, Black, White
     )
   "List of colors.  One of those colors is used as the contrast color."
-  :group 'contrast-color-picker
+  :group 'contrast-color
   :type '(repeat :tag "list of colors" string))
 
-(defcustom contrast-color-picker-cache nil
+(defcustom contrast-color-cache nil
   "Alist of contrast color and specified color."
-  :group 'contrast-color-picker
+  :group 'contrast-color
   :type '(choice
           (const :tag "Initial value" nil)
           (repeat :tag "Cons sell of contrast color and specified color"
@@ -76,41 +76,41 @@
 ;;;;;;;;;;;;;;;;
 ;; Functions
 
-(defun contrast-color-picker--get-lab (color)
+(defun contrast-color--get-lab (color)
   "Get CIE l*a*b from COLOR."
   (apply 'color-srgb-to-lab (color-name-to-rgb color)))
 
-(defun contrast-color-picker--compute (base-color)
+(defun contrast-color--compute (base-color)
   "Return alist of (ciede2000 . color).
 As the reference BASE-COLOR will be used on the process."
-  (let* ((colors contrast-color-picker-color-candidates)
-         (b (contrast-color-picker--get-lab base-color))
+  (let* ((colors contrast-color-color-candidates)
+         (b (contrast-color--get-lab base-color))
          (labs-and-colors
           (cl-mapcar
            (lambda (c)
-             (cons (contrast-color-picker--get-lab c) c)) colors)))
+             (cons (contrast-color--get-lab c) c)) colors)))
     (cl-mapcar (lambda (pair) (cons (color-cie-de2000 b (car pair)) (cdr pair)))
                labs-and-colors)))
 
-(defun contrast-color-picker--pick (color)
+(defun contrast-color--pick (color)
   "Return contrast color against COLOR."
   (cl-loop
-   with cie-and-colors = (contrast-color-picker--compute color)
+   with cie-and-colors = (contrast-color--compute color)
    for (cie . c) in cie-and-colors
    for best = (cons cie c) then (if (< (car best) cie) (cons cie c) best)
    finally return (cdr best)))
 
 ;;;###autoload
-(defun contrast-color-picker (color)
+(defun contrast-color (color)
   "Return most contrasted color against COLOR.
-The return color picked from ‘contrast-color-picker-color-candidates’.
+The return color picked from ‘contrast-color-color-candidates’.
 The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
-  (let ((best-color (assoc-default color contrast-color-picker-cache)))
+  (let ((best-color (assoc-default color contrast-color-cache)))
     (if best-color
         best-color
-      (let ((c (contrast-color-picker--pick color)))
-        (add-to-list 'contrast-color-picker-cache (cons color c))
+      (let ((c (contrast-color--pick color)))
+        (add-to-list 'contrast-color-cache (cons color c))
         c))))
 
-(provide 'contrast-color-picker)
-;;; contrast-color-picker.el ends here
+(provide 'contrast-color)
+;;; contrast-color.el ends here
