@@ -48,7 +48,6 @@
 ;;; Code:
 
 (require 'color)
-(require 'term/tty-colors)
 (require 'cl-lib)
 
 (defgroup contrast-color nil "contrast-color group"
@@ -83,14 +82,6 @@
   :group 'contrast-color
   :type 'bool)
 
-(defconst contrast-color-x-color-alist
-  ;; filter .*grey colors (there are same .*gray colors, so)
-  (cl-loop for (c . rgb) in color-name-rgb-alist
-           unless (string-match "grey" c)
-           collect c)
-  "Color list from ‘color-name-rgb-alist’.")
-
-
 ;;;;;;;;;;;;;;;;
 ;; Functions
 
@@ -118,32 +109,16 @@ As the reference BASE-COLOR will be used to compare on the process."
    finally return (cdr best)))
 
 ;;;###autoload
-(defun contrast-color (color &optional range)
+(defun contrast-color (color)
   "Return most contrasted color against COLOR.
 The return color picked from ‘contrast-color-candidates’.
-The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function.
-
-Also you can change RANGE of contrast color candidates:
-
-  nil  - use ‘contrast-color-candidates’
-  t    - use ‘contrast-color-x-color-alist’
-  both - use ‘contrast-color-candidates’ and ‘contrast-color-x-color-alist’"
+The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
   (let ((cached-color (assoc-default color contrast-color-cache)))
     (if cached-color
         cached-color
-      (let ((contrast-color-candidates
-             (contrast-color--adjust-candidates range)))
-        (let ((c (contrast-color--format
-                  (contrast-color--compute color))))
+      (let ((c (contrast-color--format (contrast-color--compute color))))
           (add-to-list 'contrast-color-cache (cons color c))
-          c)))))
-
-(defun contrast-color--adjust-candidates (range)
-  (if (not range)
-      contrast-color-candidates
-    (cl-case range
-      (both (append contrast-color-x-color-alist contrast-color-candidates))
-      (t contrast-color-x-color-alist))))
+          c))))
 
 (defun contrast-color--format (color)
   "Format color name.
