@@ -85,14 +85,13 @@
   (apply 'color-srgb-to-lab (color-name-to-rgb color)))
 
 (defun contrast-color--compute-core (base-color)
-  (let* ((colors contrast-color-candidates)
   "Return alist of (color-of-candidate . ciede2000).
 As the reference BASE-COLOR will be used to compare on the process."
+  (let* ((candidates contrast-color-candidates)
          (b (contrast-color--get-lab base-color))
          (labs-and-colors
           (cl-mapcar
-           (lambda (c)
-             (cons (contrast-color--get-lab c) c)) colors)))
+           (lambda (c) (cons (contrast-color--get-lab c) c)) candidates)))
     (cl-mapcar (lambda (pair) (cons (color-cie-de2000 b (car pair)) (cdr pair)))
                labs-and-colors)))
 
