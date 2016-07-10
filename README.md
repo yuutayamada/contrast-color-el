@@ -10,6 +10,10 @@ colors are based on [Google's material design palette](https://material.google.c
 ``` lisp
 (contrast-color-picker "#ff00ff") ; -> "#4caf50"
 
+;                 or
+
+(contrast-color "Brightmagenta") ; -> "#4caf50"
+
 ```
 
 ## License
