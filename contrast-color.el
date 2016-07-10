@@ -107,9 +107,9 @@ As the reference BASE-COLOR will be used on the process."
   "Return most contrasted color against COLOR.
 The return color picked from ‘contrast-color-candidates’.
 The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
-  (let ((best-color (assoc-default color contrast-color-cache)))
-    (if best-color
-        best-color
+  (let ((cached-color (assoc-default color contrast-color-cache)))
+    (if cached-color
+        cached-color
       (let ((c (contrast-color--compute color)))
         (add-to-list 'contrast-color-cache (cons color c))
         c))))
