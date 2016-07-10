@@ -98,10 +98,14 @@ As the reference BASE-COLOR will be used to compare on the process."
          (labs-and-colors
           (or contrast-color--lab-cache
               (setq contrast-color--lab-cache
-                    (cl-mapcar
-                     (lambda (c) (cons (contrast-color--get-lab c) c)) candidates)))))
+                    (contrast-color--convert-lab candidates)))))
     (cl-loop for (l . c) in labs-and-colors
              collect (contrast-color--examine b l c))))
+
+(defun contrast-color--convert-lab (color-candidates)
+  "Convert COLOR-CANDIDATES to l*a*b style."
+  (cl-loop for c in color-candidates
+           collect (cons (contrast-color--get-lab c) c) ))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
