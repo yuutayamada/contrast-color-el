@@ -80,7 +80,7 @@
   "Get CIE l*a*b from COLOR."
   (apply 'color-srgb-to-lab (color-name-to-rgb color)))
 
-(defun contrast-color--compute (base-color)
+(defun contrast-color--compute-core (base-color)
   "Return alist of (ciede2000 . color).
 As the reference BASE-COLOR will be used on the process."
   (let* ((colors contrast-color-candidates)
@@ -95,7 +95,7 @@ As the reference BASE-COLOR will be used on the process."
 (defun contrast-color--pick (color)
   "Return contrast color against COLOR."
   (cl-loop
-   with cie-and-colors = (contrast-color--compute color)
+   with cie-and-colors = (contrast-color--compute-core color)
    for (cie . c) in cie-and-colors
    for best = (cons cie c) then (if (< (car best) cie) (cons cie c) best)
    finally return (cdr best)))
