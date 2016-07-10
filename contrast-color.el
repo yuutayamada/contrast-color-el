@@ -103,7 +103,13 @@ As the reference BASE-COLOR will be used to compare on the process."
                     (cl-mapcar
                      (lambda (c) (cons (contrast-color--get-lab c) c)) candidates)))))
     (cl-loop for (l . c) in labs-and-colors
-             collect (cons (color-cie-de2000 b l) c))))
+             collect (contrast-color--examine b l c))))
+
+;; TODO: add an advice to debug distance
+(defun contrast-color--examine (color1 color2 color2-name)
+  "Examine distance of COLOR1 and COLOR2.
+Return pair of (color-distance . COLOR2-NAME)."
+  (cons (color-cie-de2000 color1 color2) color2-name))
 
 (defun contrast-color--compute (color)
   "Return contrast color against COLOR."
