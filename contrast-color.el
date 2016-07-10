@@ -48,6 +48,7 @@
 ;;; Code:
 
 (require 'color)
+(require 'term/tty-colors)
 (require 'cl-lib)
 
 (defgroup contrast-color nil "contrast-color group"
@@ -77,6 +78,19 @@
           (repeat :tag "Cons sell of specified color and contrast color"
                   (cons string string))))
 
+(defcustom contrast-color-use-hex-name t
+  "If non-nil, returned color name will be hex value."
+  :group 'contrast-color
+  :type 'bool)
+
+(defconst contrast-color-x-color-alist
+  ;; filter .*grey colors (there are same .*gray colors, so)
+  (cl-loop for (c . rgb) in color-name-rgb-alist
+           unless (string-match "grey" c)
+           collect c)
+  "Color list from ‘color-name-rgb-alist’.")
+
+
 ;;;;;;;;;;;;;;;;
 ;; Functions
 
@@ -104,16 +118,40 @@ As the reference BASE-COLOR will be used to compare on the process."
    finally return (cdr best)))
 
 ;;;###autoload
-(defun contrast-color (color)
+(defun contrast-color (color &optional range)
   "Return most contrasted color against COLOR.
 The return color picked from ‘contrast-color-candidates’.
-The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
+The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function.
+
+Also you can change RANGE of contrast color candidates:
+
+  nil  - use ‘contrast-color-candidates’
+  t    - use ‘contrast-color-x-color-alist’
+  both - use ‘contrast-color-candidates’ and ‘contrast-color-x-color-alist’"
   (let ((cached-color (assoc-default color contrast-color-cache)))
     (if cached-color
         cached-color
-      (let ((c (contrast-color--compute color)))
-        (add-to-list 'contrast-color-cache (cons color c))
-        c))))
+      (let ((contrast-color-candidates
+             (contrast-color--adjust-candidates range)))
+        (let ((c (contrast-color--format
+                  (contrast-color--compute color))))
+          (add-to-list 'contrast-color-cache (cons color c))
+          c)))))
+
+(defun contrast-color--adjust-candidates (range)
+  (if (not range)
+      contrast-color-candidates
+    (cl-case range
+      (both (append contrast-color-x-color-alist contrast-color-candidates))
+      (t contrast-color-x-color-alist))))
+
+(defun contrast-color--format (color)
+  "Format color name.
+If ‘contrast-color-use-hex-name’ is non-nil, convert COLOR name to hex form."
+  (if (and contrast-color-use-hex-name
+           (not (eq ?# (string-to-char color))))
+      (apply 'color-rgb-to-hex (color-name-to-rgb color))
+    color))
 
 (provide 'contrast-color)
 ;;; contrast-color.el ends here
