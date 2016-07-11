@@ -151,7 +151,7 @@ As the reference BASE-COLOR will be used to compare on the process."
 
 (defun contrast-color--categoraize-1 (lab key)
   (cl-case key
-    (L
+    (L     ; range 0 ~ 100
      (cond
       ((and (<=  0.0 lab) (<  lab  20.0)) 'lab-0-20)
       ((and (<= 20.0 lab) (<  lab  40.0)) 'lab-20-40)
@@ -159,7 +159,7 @@ As the reference BASE-COLOR will be used to compare on the process."
       ((and (<= 60.0 lab) (<  lab  80.0)) 'lab-60-80)
       ((and (<= 80.0 lab) (<= lab 100.0)) 'lab-80-100)
       (t (error (message "Can not happen (L) %f" lab)))))
-    ((a b)
+    ((a b) ; range -128 ~ +127
      (cond
       ((and (<= -128.0 lab) (<  lab -77.0)) 'lab-0-20)
       ((and (<=  -77.0 lab) (<  lab -26.0)) 'lab-20-40)
