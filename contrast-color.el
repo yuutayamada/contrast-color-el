@@ -110,12 +110,12 @@ As the reference BASE-COLOR will be used to compare on the process."
       (cl-loop for (c . l) in result
                collect (contrast-color--examine b l c)))))
 
-(defun contrast-color--filter (b colors-&-labs)
+(defun contrast-color--filter (base-lab colors-&-labs)
   (cl-loop with rank0 = '()
            with rank1 = '()
            with rank2 = '()
            with rank3 = '()
-           with b-category = (contrast-color--categorize b)
+           with b-category = (contrast-color--categorize base-lab)
            for (c-name . data) in colors-&-labs
            for c-category = (cdar data)
            for c-lab = (cl-cdadr data)
