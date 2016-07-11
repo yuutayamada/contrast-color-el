@@ -141,13 +141,10 @@ As the reference BASE-COLOR will be used to compare on the process."
   ;; Δa* red and green (+ = redder, - = greener)
   ;; Δb* yellow and blue (+ = yellower, - = bluer)
   ;; http://www.colourphil.co.uk/lab_lch_colour_space.shtml
-  (let ((l (nth 0 lab))
-        (a (nth 1 lab))
-        (b (nth 2 lab)))
-    (list
-     (contrast-color--categoraize-1 l 'L)
-     (contrast-color--categoraize-1 a 'a)
-     (contrast-color--categoraize-1 b 'b))))
+  (list
+   (contrast-color--categoraize-1 (nth 0 lab) 'L)
+   (contrast-color--categoraize-1 (nth 1 lab) 'a)
+   (contrast-color--categoraize-1 (nth 2 lab) 'b)))
 
 (defun contrast-color--categoraize-1 (lab key)
   (cl-case key
