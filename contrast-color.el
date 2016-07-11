@@ -126,11 +126,7 @@ As the reference BASE-COLOR will be used to compare on the process."
                 (2 (push (cons c-name c-lab) rank2))
                 (3 (push (cons c-name c-lab) rank3)))
            finally return (prog1 (or rank3 rank2 rank1 rank0)
-                            (when contrast-color-debug
-                              (message "rank0: %d" (length rank0))
-                              (message "rank1: %d" (length rank1))
-                              (message "rank2: %d" (length rank2))
-                              (message "rank3: %d" (length rank3))))))
+                            (contrast-color--debug-print rank0 rank1 rank2 rank3))))
 
 (defun contrast-color--convert-lab (color-candidates)
   "Convert COLOR-CANDIDATES to l*a*b style."
@@ -235,6 +231,11 @@ If ‘contrast-color-use-hex-name’ is non-nil, convert COLOR name to hex form.
            (not (eq ?# (string-to-char color))))
       (apply 'color-rgb-to-hex (color-name-to-rgb color))
     color))
+
+(defun contrast-color--debug-print (&rest args)
+  (when contrast-color-debug
+    (cl-loop for i from 0 to (length args)
+             do (message "rank%d: %d" i (nth i args)))))
 
 ;; FIXME: defaulting this value would increase calculation time
 ;; https://material.google.com/style/color.html
