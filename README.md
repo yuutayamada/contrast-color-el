@@ -15,7 +15,7 @@ color using CIEDE2000 algorithm.
 ```
 
 Note that if you want to choose from more colors, below configuration set
-[Google's material design's colors][https://material.google.com/style/color.html]
+[Google's material design's colors](https://material.google.com/style/color.html)
 as color candidates:
 
 ``` lisp
