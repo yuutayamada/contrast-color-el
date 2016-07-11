@@ -80,6 +80,11 @@
   :group 'contrast-color
   :type 'bool)
 
+(defvar contrast-color-predicate-function (lambda (_arg1 _arg2) t)
+  "Predicate function, which takes two arguments.
+First argument is base color’s category and second argument is
+candidate color’s category.")
+
 (defvar contrast-color--lab-cache nil
   "Internal cache.")
 
@@ -99,13 +104,51 @@ As the reference BASE-COLOR will be used to compare on the process."
           (or contrast-color--lab-cache
               (setq contrast-color--lab-cache
                     (contrast-color--convert-lab candidates)))))
-    (cl-loop for (c . l) in colors-&-labs
-             collect (contrast-color--examine b l c))))
+    (cl-loop with b-category = (contrast-color--categorize b)
+             for (c . l) in colors-&-labs
+             for c-category = (cdar l)
+             if (funcall contrast-color-predicate-function b-category c-category)
+             collect (contrast-color--examine b (cdadr l) c))))
 
 (defun contrast-color--convert-lab (color-candidates)
   "Convert COLOR-CANDIDATES to l*a*b style."
   (cl-loop for c in color-candidates
-           collect (cons c (contrast-color--get-lab c))))
+           for lab = (contrast-color--get-lab c)
+           collect (cons c `((category . ,(contrast-color--categorize lab))
+                             (lab . ,lab)))))
+
+(defun contrast-color--categorize (lab)
+  "Categorize LAB."
+  ;; ΔL* lightness and darkness (+ = lighter, - = darker)
+  ;; Δa* red and green (+ = redder, - = greener)
+  ;; Δb* yellow and blue (+ = yellower, - = bluer)
+  ;; http://www.colourphil.co.uk/lab_lch_colour_space.shtml
+  (let ((l (nth 0 lab))
+        (a (nth 1 lab))
+        (b (nth 2 lab)))
+    (list
+     (cond
+      ((and (<=  0.0 l) (<  l  20.0)) 'l-0-20)
+      ((and (<= 20.0 l) (<  l  40.0)) 'l-20-40)
+      ((and (<= 40.0 l) (<  l  60.0)) 'l-40-60)
+      ((and (<= 60.0 l) (<  l  80.0)) 'l-60-80)
+      ((and (<= 80.0 l) (<= l 100.0)) 'l-80-100)
+      (t (error (message "Can not happen (l) %f" l))))
+     (cond
+      ((and (<= -128.0 a) (<  a -77.0)) 'a-0-20)
+      ((and (<=  -77.0 a) (<  a -26.0)) 'a-20-40)
+      ((and (<=  -26.0 a) (<  a  25.0)) 'a-40-60)
+      ((and (<=   25.0 a) (<  a  76.0)) 'a-60-80)
+      ((and (<=   76.0 a) (<= a 127.0)) 'a-80-100)
+      (t (error (message "Can not happen (a) %f" a))))
+     (cond
+      ((and (<= -128.0 b) (<  b -77.0)) 'b-0-20)
+      ((and (<=  -77.0 b) (<  b -26.0)) 'b-20-40)
+      ((and (<=  -26.0 b) (<  b  25.0)) 'b-40-60)
+      ((and (<=   25.0 b) (<  b  76.0)) 'b-60-80)
+      ((and (<=   76.0 b) (<= b 127.0)) 'b-80-100)
+      (t (error (message "Can not happen (b) %f" b)))))))
+
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
