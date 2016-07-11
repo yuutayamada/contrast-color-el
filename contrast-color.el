@@ -211,10 +211,11 @@ The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
 (defun contrast-color--format (color)
   "Format color name.
 If ‘contrast-color-use-hex-name’ is non-nil, convert COLOR name to hex form."
-  (if (and contrast-color-use-hex-name
-           (not (eq ?# (string-to-char color))))
-      (apply 'color-rgb-to-hex (color-name-to-rgb color))
-    color))
+  (downcase
+   (if (and contrast-color-use-hex-name
+            (not (eq ?# (string-to-char color))))
+       (apply 'color-rgb-to-hex (color-name-to-rgb color))
+     color)))
 
 (defun contrast-color--debug-print (&rest args)
   (when contrast-color-debug
