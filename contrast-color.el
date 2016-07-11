@@ -200,15 +200,13 @@ Return pair of (color-distance . COLOR2-NAME)."
   "Return most contrasted color against COLOR.
 The return color picked from ‘contrast-color-candidates’.
 The algorithm is used CIEDE2000. See also ‘color-cie-de2000’ function."
-  (if (color-defined-p color)
-      (error "Unusable color %s" color)
-    (let* ((base-color (downcase color))
-           (cached-color (assoc-default base-color contrast-color-cache)))
-      (if cached-color
-          cached-color
-        (let ((c (contrast-color--format (contrast-color--compute base-color))))
-          (add-to-list 'contrast-color-cache (cons base-color c))
-          c)))))
+  (let* ((base-color (downcase color))
+         (cached-color (assoc-default base-color contrast-color-cache)))
+    (if cached-color
+        cached-color
+      (let ((c (contrast-color--format (contrast-color--compute base-color))))
+        (add-to-list 'contrast-color-cache (cons base-color c))
+        c))))
 
 (defun contrast-color--format (color)
   "Format color name.
