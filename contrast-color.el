@@ -178,11 +178,11 @@ You can return 0 to 3.  3 is checked first and 0 is last."
                           (contrast-color--filter-Lab b-b c-b))))))
       rank)))
 
-(defun contrast-color--filter-Lab (b-lab c-lab)
-  (cl-case b-lab
-    ((lab-0-20 lab-20-40)   (memq c-lab '(lab-60-80 lab-80-100)))
-    (lab-40-60              (memq c-lab '(lab-0-20  lab-80-100)))
-    ((lab-60-80 lab-80-100) (memq c-lab '(lab-0-20  lab-20-40)))))
+(defun contrast-color--filter-Lab (b-rate c-rate)
+  (cl-case b-rate
+    ((lab-0-20 lab-20-40)   (memq c-rate '(lab-60-80 lab-80-100)))
+    (lab-40-60              (memq c-rate '(lab-0-20  lab-80-100)))
+    ((lab-60-80 lab-80-100) (memq c-rate '(lab-0-20  lab-20-40)))))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
