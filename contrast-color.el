@@ -80,13 +80,15 @@
   :group 'contrast-color
   :type 'bool)
 
-(defvar contrast-color-predicate-function (lambda (_arg1 _arg2) t)
+(defvar contrast-color-predicate-function 'contrast-color-predicate-default
   "Predicate function, which takes two arguments.
 First argument is base color’s category and second argument is
 candidate color’s category.")
 
 (defvar contrast-color--lab-cache nil
   "Internal cache.")
+
+(defvar contrast-color-debug nil)
 
 ;;;;;;;;;;;;;;;;
 ;; Functions
@@ -104,11 +106,30 @@ As the reference BASE-COLOR will be used to compare on the process."
           (or contrast-color--lab-cache
               (setq contrast-color--lab-cache
                     (contrast-color--convert-lab candidates)))))
-    (cl-loop with b-category = (contrast-color--categorize b)
-             for (c . l) in colors-&-labs
-             for c-category = (cdar l)
-             if (funcall contrast-color-predicate-function b-category c-category)
-             collect (contrast-color--examine b (cdadr l) c))))
+    (let ((result (contrast-color--filter b colors-&-labs)))
+      (cl-loop for (c . l) in result
+               collect (contrast-color--examine b l c)))))
+
+(defun contrast-color--filter (b colors-&-labs)
+  (cl-loop with result0 = '()
+           with result1 = '()
+           with result2 = '()
+           with result3 = '()
+           with b-category = (contrast-color--categorize b)
+           for (c . l) in colors-&-labs
+           for c-category = (cdar l)
+           if (funcall contrast-color-predicate-function b-category c-category)
+           do (cl-case it
+                (0 (push (cons c (cl-cdadr l)) result0))
+                (1 (push (cons c (cl-cdadr l)) result1))
+                (2 (push (cons c (cl-cdadr l)) result2))
+                (3 (push (cons c (cl-cdadr l)) result3)))
+           finally return (prog1 (or result3 result2 result1 result0)
+                            (when contrast-color-debug
+                              (message "result0: %d" (length result0))
+                              (message "result1: %d" (length result1))
+                              (message "result2: %d" (length result2))
+                              (message "result3: %d" (length result3))))))
 
 (defun contrast-color--convert-lab (color-candidates)
   "Convert COLOR-CANDIDATES to l*a*b style."
@@ -151,12 +172,34 @@ As the reference BASE-COLOR will be used to compare on the process."
 
 (defun contrast-color-predicate-default (base contrast)
   "Default predicate function.
-Return non-nil if BASE and CONTRAST’s category doesn't match."
+Return non-nil if BASE and CONTRAST’s category doesn't match.
+You can return 0 to 3.  3 is checked first and 0 is last."
   (cl-destructuring-bind (b-l b-a b-b c-l c-a c-b) (append base contrast)
-    (and
-     (not (eq b-l c-l))
-     (not (eq b-a c-a))
-     (not (eq b-b c-b)))))
+    (let ((rank
+           (length (delq nil
+                         (list
+                          (contrast-color-filter--L b-l c-l)
+                          (contrast-color-filter--a b-a c-a)
+                          (contrast-color-filter--b b-b c-b))))))
+      rank)))
+
+(defun contrast-color-filter--L (b-l c-l)
+  (cl-case b-l
+    ((l-0-20 l-20-40)   (memq c-l '(l-60-80 l-80-100)))
+    (l-40-60 (memq c-l '(l-0-20 l-80-100)))
+    ((l-60-80 l-80-100) (memq c-l '(l-0-20 l-20-40)))))
+
+(defun contrast-color-filter--a (b-a c-a)
+  (cl-case b-a
+    ((a-0-20 a-20-40)   (memq c-a '(a-60-80 a-80-100)))
+    (a-40-60 (memq c-a '(a-0-20 a-80-100)))
+    ((a-60-80 a-80-100) (memq c-a '(a-0-20 a-20-40)))))
+
+(defun contrast-color-filter--b (b-b c-b)
+  (cl-case b-b
+    ((b-0-20 b-20-40)   (memq c-b '(b-60-80 b-80-100)))
+    (b-40-60 (memq c-b '(b-0-20 b-80-100)))
+    ((b-60-80 b-80-100) (memq c-b '(b-0-20 b-20-40)))))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
