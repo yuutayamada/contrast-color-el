@@ -43,7 +43,7 @@
 ;;   (contrast-color "Brightmagenta") ; -> "#4caf50"
 ;;
 ;;
-;; Note that if you want to choose from more colors, below configuration set
+;; Note that if you want to choose from more colors, below configuration sets
 ;; material design’s colors as color candidates:
 ;;
 ;;    (setq contrast-color-candidates contrast-color-material-colors

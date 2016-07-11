@@ -14,7 +14,7 @@ color using CIEDE2000 algorithm.
 
 ```
 
-Note that if you want to choose from more colors, below configuration set
+Note that if you want to choose from more colors, below configuration sets
 [Google's material design's colors](https://material.google.com/style/color.html)
 as color candidates:
 
