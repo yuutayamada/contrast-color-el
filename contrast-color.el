@@ -145,27 +145,28 @@ As the reference BASE-COLOR will be used to compare on the process."
         (a (nth 1 lab))
         (b (nth 2 lab)))
     (list
+     (contrast-color--categoraize-1 l 'L)
+     (contrast-color--categoraize-1 a 'a)
+     (contrast-color--categoraize-1 b 'b))))
+
+(defun contrast-color--categoraize-1 (lab key)
+  (cl-case key
+    (L
      (cond
-      ((and (<=  0.0 l) (<  l  20.0)) 'l-0-20)
-      ((and (<= 20.0 l) (<  l  40.0)) 'l-20-40)
-      ((and (<= 40.0 l) (<  l  60.0)) 'l-40-60)
-      ((and (<= 60.0 l) (<  l  80.0)) 'l-60-80)
-      ((and (<= 80.0 l) (<= l 100.0)) 'l-80-100)
-      (t (error (message "Can not happen (l) %f" l))))
+      ((and (<=  0.0 lab) (<  lab  20.0)) 'lab-0-20)
+      ((and (<= 20.0 lab) (<  lab  40.0)) 'lab-20-40)
+      ((and (<= 40.0 lab) (<  lab  60.0)) 'lab-40-60)
+      ((and (<= 60.0 lab) (<  lab  80.0)) 'lab-60-80)
+      ((and (<= 80.0 lab) (<= lab 100.0)) 'lab-80-100)
+      (t (error (message "Can not happen (L) %f" lab)))))
+    ((a b)
      (cond
-      ((and (<= -128.0 a) (<  a -77.0)) 'a-0-20)
-      ((and (<=  -77.0 a) (<  a -26.0)) 'a-20-40)
-      ((and (<=  -26.0 a) (<  a  25.0)) 'a-40-60)
-      ((and (<=   25.0 a) (<  a  76.0)) 'a-60-80)
-      ((and (<=   76.0 a) (<= a 127.0)) 'a-80-100)
-      (t (error (message "Can not happen (a) %f" a))))
-     (cond
-      ((and (<= -128.0 b) (<  b -77.0)) 'b-0-20)
-      ((and (<=  -77.0 b) (<  b -26.0)) 'b-20-40)
-      ((and (<=  -26.0 b) (<  b  25.0)) 'b-40-60)
-      ((and (<=   25.0 b) (<  b  76.0)) 'b-60-80)
-      ((and (<=   76.0 b) (<= b 127.0)) 'b-80-100)
-      (t (error (message "Can not happen (b) %f" b)))))))
+      ((and (<= -128.0 lab) (<  lab -77.0)) 'lab-0-20)
+      ((and (<=  -77.0 lab) (<  lab -26.0)) 'lab-20-40)
+      ((and (<=  -26.0 lab) (<  lab  25.0)) 'lab-40-60)
+      ((and (<=   25.0 lab) (<  lab  76.0)) 'lab-60-80)
+      ((and (<=   76.0 lab) (<= lab 127.0)) 'lab-80-100)
+      (t (error (message "Can not happen (%s) %f" key lab)))))))
 
 (defun contrast-color-predicate-default (base contrast)
   "Default predicate function.
@@ -175,28 +176,16 @@ You can return 0 to 3.  3 is checked first and 0 is last."
     (let ((rank
            (length (delq nil
                          (list
-                          (contrast-color-filter--L b-l c-l)
-                          (contrast-color-filter--a b-a c-a)
-                          (contrast-color-filter--b b-b c-b))))))
+                          (contrast-color--filter-Lab b-l c-l)
+                          (contrast-color--filter-Lab b-a c-a)
+                          (contrast-color--filter-Lab b-b c-b))))))
       rank)))
 
-(defun contrast-color-filter--L (b-l c-l)
-  (cl-case b-l
-    ((l-0-20 l-20-40)   (memq c-l '(l-60-80 l-80-100)))
-    (l-40-60 (memq c-l '(l-0-20 l-80-100)))
-    ((l-60-80 l-80-100) (memq c-l '(l-0-20 l-20-40)))))
-
-(defun contrast-color-filter--a (b-a c-a)
-  (cl-case b-a
-    ((a-0-20 a-20-40)   (memq c-a '(a-60-80 a-80-100)))
-    (a-40-60 (memq c-a '(a-0-20 a-80-100)))
-    ((a-60-80 a-80-100) (memq c-a '(a-0-20 a-20-40)))))
-
-(defun contrast-color-filter--b (b-b c-b)
-  (cl-case b-b
-    ((b-0-20 b-20-40)   (memq c-b '(b-60-80 b-80-100)))
-    (b-40-60 (memq c-b '(b-0-20 b-80-100)))
-    ((b-60-80 b-80-100) (memq c-b '(b-0-20 b-20-40)))))
+(defun contrast-color--filter-Lab (b-lab c-lab)
+  (cl-case b-lab
+    ((lab-0-20 lab-20-40)   (memq c-lab '(lab-60-80 lab-80-100)))
+    (lab-40-60              (memq c-lab '(lab-0-20  lab-80-100)))
+    ((lab-60-80 lab-80-100) (memq c-lab '(lab-0-20  lab-20-40)))))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
