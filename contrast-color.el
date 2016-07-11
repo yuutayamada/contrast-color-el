@@ -116,14 +116,15 @@ As the reference BASE-COLOR will be used to compare on the process."
            with result2 = '()
            with result3 = '()
            with b-category = (contrast-color--categorize b)
-           for (c . l) in colors-&-labs
-           for c-category = (cdar l)
+           for (c-name . data) in colors-&-labs
+           for c-category = (cdar data)
+           for c-lab = (cl-cdadr data)
            if (funcall contrast-color-predicate-function b-category c-category)
            do (cl-case it
-                (0 (push (cons c (cl-cdadr l)) result0))
-                (1 (push (cons c (cl-cdadr l)) result1))
-                (2 (push (cons c (cl-cdadr l)) result2))
-                (3 (push (cons c (cl-cdadr l)) result3)))
+                (0 (push (cons c-name c-lab) result0))
+                (1 (push (cons c-name c-lab) result1))
+                (2 (push (cons c-name c-lab) result2))
+                (3 (push (cons c-name c-lab) result3)))
            finally return (prog1 (or result3 result2 result1 result0)
                             (when contrast-color-debug
                               (message "result0: %d" (length result0))
