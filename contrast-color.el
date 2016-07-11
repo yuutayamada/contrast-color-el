@@ -101,14 +101,14 @@ candidate color’s category.")
   "Return alist of (color-of-candidate . ciede2000).
 As the reference BASE-COLOR will be used to compare on the process."
   (let* ((candidates contrast-color-candidates)
-         (b (contrast-color--get-lab base-color))
+         (b-lab (contrast-color--get-lab base-color))
          (colors-&-labs
           (or contrast-color--lab-cache
               (setq contrast-color--lab-cache
                     (contrast-color--convert-lab candidates)))))
-    (let ((result (contrast-color--filter b colors-&-labs)))
-      (cl-loop for (c . l) in result
-               collect (contrast-color--examine b l c)))))
+    (let ((result (contrast-color--filter b-lab colors-&-labs)))
+      (cl-loop for (c-name . c-lab) in result
+               collect (contrast-color--examine b-lab c-lab c-name)))))
 
 (defun contrast-color--filter (base-lab colors-&-labs)
   (cl-loop with rank0 = '()
