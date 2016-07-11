@@ -149,6 +149,14 @@ As the reference BASE-COLOR will be used to compare on the process."
       ((and (<=   76.0 b) (<= b 127.0)) 'b-80-100)
       (t (error (message "Can not happen (b) %f" b)))))))
 
+(defun contrast-color-predicate-default (base contrast)
+  "Default predicate function.
+Return non-nil if BASE and CONTRAST’s category doesn't match."
+  (cl-destructuring-bind (b-l b-a b-b c-l c-a c-b) (append base contrast)
+    (and
+     (not (eq b-l c-l))
+     (not (eq b-a c-a))
+     (not (eq b-b c-b)))))
 
 ;; TODO: add an advice to debug distance
 (defun contrast-color--examine (color1 color2 color2-name)
