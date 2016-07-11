@@ -141,12 +141,12 @@ As the reference BASE-COLOR will be used to compare on the process."
   ;; Δa* red and green (+ = redder, - = greener)
   ;; Δb* yellow and blue (+ = yellower, - = bluer)
   ;; http://www.colourphil.co.uk/lab_lch_colour_space.shtml
-  (list
-   (contrast-color--categoraize-1 (nth 0 lab) 'L)
-   (contrast-color--categoraize-1 (nth 1 lab) 'a)
-   (contrast-color--categoraize-1 (nth 2 lab) 'b)))
+  (cl-loop for order in '(L a b)
+           collect (contrast-color--categoraize-1 order lab)))
 
-(defun contrast-color--categoraize-1 (lab key)
+(defun contrast-color--categoraize-1 (key lab)
+  "Classify LAB’s containing rate."
+  (setq lab (nth (cl-case key (L 0) (a 1) (b 2)) lab))
   (cl-case key
     (L     ; range 0 ~ 100
      (cond
