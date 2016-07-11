@@ -170,13 +170,10 @@ As the reference BASE-COLOR will be used to compare on the process."
 Return non-nil if BASE and CONTRAST’s category doesn't match.
 You can return 0 to 3.  3 is checked first and 0 is last."
   (cl-destructuring-bind (b-l b-a b-b c-l c-a c-b) (append base contrast)
-    (let ((rank
-           (length (delq nil
-                         (list
-                          (contrast-color--filter-Lab b-l c-l)
-                          (contrast-color--filter-Lab b-a c-a)
-                          (contrast-color--filter-Lab b-b c-b))))))
-      rank)))
+    (cl-loop for (b-lab . c-lab) in `((,b-l . ,c-l) (,b-a . ,c-a) (,b-b . ,c-b))
+             collect (contrast-color--filter-Lab b-lab c-lab) into list-of-t
+             ;; Count number of t; 3 is most high rank
+             finally return (length (delq nil list-of-t)))))
 
 (defun contrast-color--filter-Lab (b-rate c-rate)
   (cl-case b-rate
