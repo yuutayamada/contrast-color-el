@@ -155,7 +155,7 @@ As the reference BASE-COLOR will be used to compare on the process."
       ((and (<= 40.0 lab) (<  lab  60.0)) 'lab-40-60)
       ((and (<= 60.0 lab) (<  lab  80.0)) 'lab-60-80)
       ((and (<= 80.0 lab) (<= lab 100.0)) 'lab-80-100)
-      (t (error (message "Can not happen (L) %f" lab)))))
+      (t (error "Can not happen (L) %f" lab))))
     ((a b) ; range -128 ~ +127
      (cond
       ((and (<= -128.0 lab) (<  lab -77.0)) 'lab-0-20)
@@ -163,7 +163,7 @@ As the reference BASE-COLOR will be used to compare on the process."
       ((and (<=  -26.0 lab) (<  lab  25.0)) 'lab-40-60)
       ((and (<=   25.0 lab) (<  lab  76.0)) 'lab-60-80)
       ((and (<=   76.0 lab) (<= lab 127.0)) 'lab-80-100)
-      (t (error (message "Can not happen (%s) %f" key lab)))))))
+      (t (error "Can not happen (%s) %f" key lab))))))
 
 (defun contrast-color-predicate-default (base contrast)
   "Default predicate function.
