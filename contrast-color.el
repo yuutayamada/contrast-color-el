@@ -59,9 +59,10 @@
 (defgroup contrast-color nil "contrast-color group"
   :group 'convenience)
 
-(defcustom contrast-color-candidates
-  '("black" "white" "red" "green" "yellow" "blue" "magenta" "cyan")
-  "List of colors.  One of those colors is used as the contrast color."
+(defcustom contrast-color-candidates nil ; initial value is set in end of this file
+  "List of colors.  One of those colors is used as the contrast color.
+As the default value, ‘contrast-color-material-colors’ is used.
+You can change this variable via ‘contrast-color-set’."
   :group 'contrast-color
   :type '(repeat :tag "list of colors" string))
 
@@ -217,12 +218,17 @@ If ‘contrast-color-use-hex-name’ is non-nil, convert COLOR name to hex form.
        (apply 'color-rgb-to-hex (color-name-to-rgb color))
      color)))
 
+;;;###autoload
+(defun contrast-color-set (colors)
+  "Set list of COLORS to ‘contrast-color-candidates’."
+  (setq contrast-color-candidates colors
+        contrast-color--lab-cache nil))
+
 (defun contrast-color--debug-print (&rest args)
   (when contrast-color-debug
     (cl-loop for i from 0 to (length args)
              do (message "rank%d: %d" i (nth i args)))))
 
-;; FIXME: defaulting this value would increase calculation time
 ;; https://material.google.com/style/color.html
 ;; license: http://zavoloklom.github.io/material-design-color-palette/license.html
 (defconst contrast-color-material-colors
@@ -285,6 +291,9 @@ If ‘contrast-color-use-hex-name’ is non-nil, convert COLOR name to hex form.
     "#455A64" "#37474F" "#263238"
     ;; Black and white
     "#000000" "#ffffff"))
+
+(unless contrast-color-candidates
+  (setq contrast-color-candidates contrast-color-material-colors))
 
 (provide 'contrast-color)
 ;;; contrast-color.el ends here
