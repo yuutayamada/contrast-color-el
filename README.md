@@ -6,24 +6,22 @@ color using CIEDE2000 algorithm.
 ## Usage
 
 ``` lisp
-(contrast-color-picker "#ff00ff") ; -> "#4caf50"
+(contrast-color-picker "#ff00ff") ; -> "#1b5e20"
 
 ;                 or
 
-(contrast-color "Brightmagenta") ; -> "#4caf50"
+(contrast-color "Brightmagenta") ; -> "#1b5e20"
 
 ```
 
-Note that if you want to choose from more colors, below configuration sets
-[Google's material design's colors](https://material.google.com/style/color.html)
-as color candidates:
+Note that as default color candidates, this package uses
+`contrast-color-material-colors` variable, which is defined based on
+[Google's material design's colors](https://material.google.com/style/color.html),
+but if you want to change this color definition you can do like this:
 
-``` lisp
-(setq contrast-color-candidates contrast-color-material-colors
-      contrast-color--lab-cache nil)
-```
+    (contrast-color-set '("black" "white"))
 
-But keep in mind that this configuration may increase calculation time.
+But keep in mind that providing many colors may increase calculation time.
 
 ## License
 MIT License
