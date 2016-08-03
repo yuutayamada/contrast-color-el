@@ -6,7 +6,7 @@ color using CIEDE2000 algorithm.
 ## Usage
 
 ``` lisp
-(contrast-color-picker "#ff00ff") ; -> "#1b5e20"
+(contrast-color "#ff00ff") ; -> "#1b5e20"
 
 ;                 or
 
