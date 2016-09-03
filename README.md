@@ -1,4 +1,5 @@
 # contrast-color.el
+[![Build Status](https://travis-ci.org/yuutayamada/contrast-color-el.svg?branch=master)](https://travis-ci.org/yuutayamada/contrast-color-el)
 
 This package only provide a single function that return a contrast
 color using CIEDE2000 algorithm.
